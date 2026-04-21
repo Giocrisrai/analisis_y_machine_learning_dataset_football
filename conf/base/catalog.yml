@@ -2,3 +2,43 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://docs.kedro.org/en/stable/catalog-data/introduction/#data-catalog
+
+# Base de datos SQLite en capa raw (data/raw/database.sqlite).
+# La URL es relativa al directorio raíz del proyecto al ejecutar `kedro run` / notebooks.
+_sqlite: &sqlite
+  con: sqlite:///data/raw/database.sqlite
+
+country:
+  type: pandas.SQLTableDataset
+  table_name: Country
+  credentials: *sqlite
+
+league:
+  type: pandas.SQLTableDataset
+  table_name: League
+  credentials: *sqlite
+
+match:
+  type: pandas.SQLTableDataset
+  table_name: Match
+  credentials: *sqlite
+
+player:
+  type: pandas.SQLTableDataset
+  table_name: Player
+  credentials: *sqlite
+
+player_attributes:
+  type: pandas.SQLTableDataset
+  table_name: Player_Attributes
+  credentials: *sqlite
+
+team:
+  type: pandas.SQLTableDataset
+  table_name: Team
+  credentials: *sqlite
+
+team_attributes:
+  type: pandas.SQLTableDataset
+  table_name: Team_Attributes
+  credentials: *sqlite
