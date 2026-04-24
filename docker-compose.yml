@@ -1,0 +1,53 @@
+# Uso (desde la raíz del repo):
+#   docker compose build
+#   docker compose run --rm pipeline          # bootstrap + kedro run
+#   docker compose run --rm test              # bootstrap + pytest
+#   docker compose --profile lab up jupyter   # Jupyter en http://localhost:8888
+#
+# El volumen `football_data` guarda data/raw y salidas de Kedro entre ejecuciones.
+# Para usar solo SQLite sintética sin red: docker compose run --rm pipeline-minimal
+
+services:
+  pipeline:
+    build: .
+    volumes:
+      - football_data:/app/data
+    command: ["sh", "-c", "python scripts/bootstrap_data.py && kedro run"]
+
+  pipeline-minimal:
+    build: .
+    volumes:
+      - football_data:/app/data
+    command: ["sh", "-c", "python scripts/bootstrap_data.py --source minimal --force && kedro run"]
+
+  test:
+    build: .
+    volumes:
+      - football_data:/app/data
+    command:
+      [
+        "sh",
+        "-c",
+        "python scripts/bootstrap_data.py --source minimal --force && pytest -q",
+      ]
+
+  jupyter:
+    profiles: ["lab"]
+    build: .
+    working_dir: /app
+    ports:
+      - "8888:8888"
+    volumes:
+      - football_data:/app/data
+      - ./notebooks:/app/notebooks
+    environment:
+      KEDRO_DISABLE_TELEMETRY: "1"
+    command:
+      [
+        "sh",
+        "-c",
+        "python scripts/bootstrap_data.py --source minimal --force && kedro jupyter lab -- --ip=0.0.0.0 --port=8888 --no-browser --ServerApp.root_dir=/app/notebooks",
+      ]
+
+volumes:
+  football_data:

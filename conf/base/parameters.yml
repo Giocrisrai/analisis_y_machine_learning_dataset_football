@@ -1,0 +1,11 @@
+split:
+  test_size: 0.2
+  random_state: 42
+
+classification:
+  feature_columns: ["B365H", "B365D", "B365A"]
+  target: outcome
+
+regression:
+  feature_columns: ["B365H", "B365D", "B365A"]
+  target: home_team_goal

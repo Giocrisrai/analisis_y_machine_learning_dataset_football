@@ -8,6 +8,12 @@ This is your new Kedro project, which was generated using `kedro 1.3.1`.
 
 Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
 
+### Docencia: CRISP-DM y machine learning
+
+- **CRISP-DM y métricas:** [docs/guias/crispdm_y_machine_learning.md](docs/guias/crispdm_y_machine_learning.md) — fases, dónde está cada una en el repo, tablas de métricas.
+- **Modelos en profundidad + flujo integrado (diagramas, FAQ, rutas de código):** [docs/guias/modelos_y_flujo_integrado.md](docs/guias/modelos_y_flujo_integrado.md)
+- **Secuencia de notebooks (01–06 + opcional todo-en-uno):** [notebooks/README.md](notebooks/README.md)
+
 ## Rules and guidelines
 
 In order to get the best out of the template:
@@ -16,6 +22,11 @@ In order to get the best out of the template:
 * Make sure your results can be reproduced by following a data engineering convention
 * Don't commit data to your repository
 * Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
+
+## Datos y entorno reproducible
+
+- **SQLite:** `python scripts/bootstrap_data.py` (intenta Hugging Face; si falla, genera una base mínima sintética). Detalle: [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md).
+- **Docker:** `docker compose build` (o `docker-compose build`) y `docker compose run --rm pipeline` o `pipeline-minimal`. Jupyter: `docker compose --profile lab up jupyter`. Requiere daemon Docker activo; detalles en [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md).
 
 ## How to install dependencies
 
@@ -29,15 +40,45 @@ pip install -r requirements.txt
 
 ## How to run your Kedro pipeline
 
-You can run your Kedro project with:
+Con `data/raw/database.sqlite` en tu máquina, el flujo por defecto:
+
+1. **`data_processing`**: arma `features_for_ml` (cuotas B365 + `outcome` + goles).
+2. **`ml_classification`**: entrena varios clasificadores, elige el mejor por F1 macro, guarda métricas JSON, modelo `.pkl` e importancias por permutación (CSV).
+3. **`ml_regression`**: igual para regresión sobre `home_team_goal`.
+
+Comandos útiles:
 
 ```
+# Todo el flujo (orden fijo en pipeline_registry)
 kedro run
+
+# Solo una etapa
+kedro run --pipeline data_processing
+kedro run --pipeline ml_classification
+kedro run --pipeline ml_regression
+```
+
+Salidas típicas (ignoradas por git salvo `.gitkeep`): `data/05_model_input/`, `data/06_models/`, `data/08_reporting/`.
+
+### Entorno y explicabilidad extra
+
+```
+pip install -r requirements.txt
+# o, en modo editable con herramientas de desarrollo:
+pip install -e ".[dev]"
+# SHAP opcional para el notebook:
+pip install -e ".[explain]"
 ```
 
 ## How to test your Kedro project
 
-Have a look at the file `tests/test_run.py` for instructions on how to write your tests. You can run your tests as follows:
+Have a look at the file `tests/test_run.py` for instructions on how to write your tests. Chequeo completo (formato, lint, datos sintéticos, tests, pipeline):
+
+```
+make verify
+```
+
+Solo tests:
 
 ```
 pytest

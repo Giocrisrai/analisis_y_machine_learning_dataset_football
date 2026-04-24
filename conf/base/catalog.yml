@@ -42,3 +42,32 @@ team_attributes:
   type: pandas.SQLTableDataset
   table_name: Team_Attributes
   credentials: *sqlite
+
+# Salida de data_processing: mismas filas que en el notebook (cuotas + outcome + goles).
+features_for_ml:
+  type: pandas.ParquetDataset
+  filepath: data/05_model_input/features_for_ml.parquet
+
+classification_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/classification_metrics.json
+
+classification_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/classification_best_model.pkl
+
+classification_feature_importance:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/classification_permutation_importance.csv
+
+regression_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/regression_metrics.json
+
+regression_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/regression_best_model.pkl
+
+regression_feature_importance:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/regression_permutation_importance.csv
