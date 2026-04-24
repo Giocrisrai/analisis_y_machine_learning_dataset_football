@@ -1,18 +1,68 @@
-# Notebooks (ruta docente recomendada)
+# Laboratorios Jupyter (orden recomendado)
 
-Ejecutar desde la **raíz del proyecto** con `kedro jupyter lab` (o `notebook`) para tener `catalog`, `context` y rutas correctas.
+## Antes de abrir cualquier notebook
 
-Si aún no tienes la base: `python scripts/bootstrap_data.py` (ver [docs/DESARROLLO_Y_DOCKER.md](../docs/DESARROLLO_Y_DOCKER.md)).
+1. **Raíz del proyecto** en la terminal (donde está `pyproject.toml`).
+2. **Entorno virtual activado** (`.venv`).
+3. **Dependencias instaladas:** `pip install -r requirements.txt` y `pip install -e .`
+4. **Base de datos creada:** `python scripts/bootstrap_data.py`  
+   Guía detallada: [docs/GUIA_ESTUDIANTES.md](../docs/GUIA_ESTUDIANTES.md)
 
-| Orden | Notebook | CRISP-DM (aprox.) | Contenido |
-|-------|----------|-------------------|-----------|
-| 01 | `01_comprension_negocio_y_datos.ipynb` | Fases 1–2 | Problema, tablas SQLite, calidad básica, histogramas de cuotas |
-| 02 | `02_preparacion_datos.ipynb` | Fase 3 | Tabla `df_ml` = nodo Kedro; chequeo opcional vs Parquet |
-| 03 | `03_clasificacion_resultado.ipynb` | Fases 4–5 | Comparación de clasificadores, métricas, matriz de confusión |
-| 04 | `04_regresion_goles.ipynb` | Fases 4–5 | Regresión, MAE/RMSE/R², residuos |
-| 05 | `05_explicabilidad_evaluacion.ipynb` | Fase 5 | Permutación, coeficientes logísticos, SHAP opcional |
-| 06 | `06_pipeline_Kedro.ipynb` | Fase 6 | Parámetros, `session.run()`, leer JSON/Parquet de salida |
+## Cómo abrir Jupyter con Kedro
 
-**Opcional — todo en un solo archivo:** `Exploracion_de_datos.ipynb` (mismo flujo que 03–05 compactado).
+```bash
+kedro jupyter lab
+```
 
-Textos de apoyo: `docs/guias/crispdm_y_machine_learning.md`, `docs/guias/modelos_y_flujo_integrado.md`.
+o `kedro jupyter notebook`. Así tendrás `catalog`, `context` y rutas correctas.
+
+En la primera celda de cada notebook:
+
+```python
+%load_ext kedro.ipython
+```
+
+---
+
+## Secuencia de notebooks
+
+| Orden | Notebook | Fase CRISP-DM | Contenido principal | Tiempo orientativo* |
+|-------|----------|---------------|----------------------|----------------------|
+| 01 | `01_comprension_negocio_y_datos.ipynb` | 1–2 | Problema, `catalog`, `match`, calidad, histogramas | ~30–45 min |
+| 02 | `02_preparacion_datos.ipynb` | 3 | Tabla `df_ml`; comparación con Parquet de Kedro | ~20–30 min |
+| 03 | `03_clasificacion_resultado.ipynb` | 4–5 | Varios clasificadores, barras de métricas, matriz de confusión | ~45–60 min |
+| 04 | `04_regresion_goles.ipynb` | 4–5 | Ridge, bosques, boosting; MAE, RMSE, R²; residuos | ~30–45 min |
+| 05 | `05_explicabilidad_evaluacion.ipynb` | 5 | Permutación, coeficientes logísticos, SHAP opcional | ~30 min |
+| 06 | `06_pipeline_Kedro.ipynb` | 6 | Parámetros YAML, `session.run()`, leer salidas | ~20–30 min |
+
+\*Depende del hardware y de si usáis la base completa o la sintética.
+
+**Opcional (todo en uno):** `Exploracion_de_datos.ipynb` — repaso rápido de clasificación, regresión y explicabilidad en un solo flujo.
+
+---
+
+## Después de los notebooks
+
+- Ejecutar el pipeline completo: `python -m kedro run`
+- Verificar el proyecto: `make verify` (desde la raíz, con `pip install -e ".[dev]"`)
+
+Salidas generadas por Kedro:
+
+- `data/05_model_input/features_for_ml.parquet`
+- `data/08_reporting/classification_metrics.json`, `regression_metrics.json`
+- `data/06_models/*.pkl`
+- CSV de importancias en `data/08_reporting/`
+
+---
+
+## Material de apoyo
+
+- Estudiantes: [docs/GUIA_ESTUDIANTES.md](../docs/GUIA_ESTUDIANTES.md)
+- CRISP-DM y métricas: [docs/guias/crispdm_y_machine_learning.md](../docs/guias/crispdm_y_machine_learning.md)
+- Modelos y flujo integrado: [docs/guias/modelos_y_flujo_integrado.md](../docs/guias/modelos_y_flujo_integrado.md)
+
+---
+
+## Nota sobre la base sintética
+
+Si usáis `bootstrap_data.py` sin descarga completa, la base **mínima** tiene la tabla `Match` poblada pero otras tablas (`Player`, `Team`, …) pueden estar **vacías**. Los laboratorios 01–06 están pensados para no depender de esas tablas, salvo exploraciones opcionales en el notebook 01.

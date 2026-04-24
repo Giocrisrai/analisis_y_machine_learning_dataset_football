@@ -1,4 +1,10 @@
-.PHONY: verify format lint test kedro-run bootstrap-minimal
+.PHONY: help verify format lint test kedro-run bootstrap-minimal
+
+help:
+	@echo "Objetivos útiles:"
+	@echo "  make verify          - format, lint, SQLite mínima, pytest, kedro run"
+	@echo "  make test / lint / format / kedro-run / bootstrap-minimal - piezas sueltas"
+	@echo "Documentación: docs/GUIA_ESTUDIANTES.md y docs/README.md"
 
 # Formato + lint + datos sintéticos + pruebas + pipeline completo
 verify: format lint bootstrap-minimal test kedro-run

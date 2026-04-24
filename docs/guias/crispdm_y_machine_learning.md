@@ -1,5 +1,7 @@
 # CRISP-DM y aprendizaje de machine learning con este proyecto
 
+**¿Primera vez con el repo?** Empieza por [../GUIA_ESTUDIANTES.md](../GUIA_ESTUDIANTES.md) (instalación, datos, Jupyter).
+
 Esta guía enlaza la metodología **CRISP-DM** (estándar de la industria para proyectos de minería de datos) con el flujo de trabajo de este repositorio: notebook exploratorio, catálogo Kedro y pipelines reproducibles. Sirve como hilo conductor para clases o talleres.
 
 **Guía complementaria (modelos en detalle + flujo integrado con diagramas):** [modelos_y_flujo_integrado.md](modelos_y_flujo_integrado.md).

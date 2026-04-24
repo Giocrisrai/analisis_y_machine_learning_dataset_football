@@ -46,10 +46,13 @@ def download_file(url: str, dest: Path, timeout: int = 600) -> None:
     last_err: Exception | None = None
     for attempt in range(3):
         try:
+            if tmp.exists():
+                tmp.unlink()
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                if resp.status != HTTPStatus.OK:
+                code = getattr(resp, "status", None) or resp.getcode()
+                if code != HTTPStatus.OK:
                     raise urllib.error.HTTPError(
-                        url, resp.status, resp.reason, resp.headers, None
+                        url, code, getattr(resp, "reason", ""), resp.headers, None
                     )
                 chunk = 8 * 1024 * 1024
                 with tmp.open("wb") as f:
@@ -60,8 +63,18 @@ def download_file(url: str, dest: Path, timeout: int = 600) -> None:
                         f.write(b)
             tmp.replace(dest)
             return
-        except (TimeoutError, urllib.error.URLError, urllib.error.HTTPError) as e:
+        except (
+            TimeoutError,
+            urllib.error.URLError,
+            urllib.error.HTTPError,
+            OSError,
+        ) as e:
             last_err = e
+            if tmp.exists():
+                try:
+                    tmp.unlink()
+                except OSError:
+                    pass
             time.sleep(2 * (attempt + 1))
     raise RuntimeError(f"No se pudo descargar {url}: {last_err}") from last_err
 

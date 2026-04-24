@@ -1,5 +1,7 @@
 # Modelos de machine learning y flujo integrado del proyecto
 
+**Estudiantes:** instalación y ejecución en [../GUIA_ESTUDIANTES.md](../GUIA_ESTUDIANTES.md).
+
 Documento para **explicar en clase** cómo encajan los algoritmos que usa el repositorio y cómo se integran con **CRISP-DM**, el **notebook** y los **pipelines Kedro**. Convive con la guía [crispdm_y_machine_learning.md](crispdm_y_machine_learning.md).
 
 ---

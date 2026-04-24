@@ -15,6 +15,9 @@ from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
+_MIN_ROWS_FOR_TRAINING = 10
+_MIN_CLASS_COUNT_FOR_STRATIFY = 2
+
 
 def _jsonable(obj: Any) -> Any:
     if hasattr(obj, "item"):
@@ -28,6 +31,27 @@ def _jsonable(obj: Any) -> Any:
     return str(obj)
 
 
+def _train_test_maybe_stratify(
+    X: pd.DataFrame,
+    y: pd.Series,
+    *,
+    test_size: float,
+    random_state: int,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    """Stratify solo si cada clase tiene masa suficiente; si no, sklearn falla."""
+    kwargs: dict[str, Any] = {
+        "test_size": test_size,
+        "random_state": random_state,
+    }
+    if y.nunique() > 1 and y.value_counts().min() >= _MIN_CLASS_COUNT_FOR_STRATIFY:
+        kwargs["stratify"] = y
+    try:
+        return train_test_split(X, y, **kwargs)
+    except ValueError:
+        kwargs.pop("stratify", None)
+        return train_test_split(X, y, **kwargs)
+
+
 def train_classification_bundle(
     features_for_ml: pd.DataFrame,
     split: dict[str, Any],
@@ -35,14 +59,24 @@ def train_classification_bundle(
 ) -> tuple[dict[str, Any], Any, pd.DataFrame]:
     feat_cols = list(classification["feature_columns"])
     target = classification["target"]
+    missing = [c for c in feat_cols + [target] if c not in features_for_ml.columns]
+    if missing:
+        msg = f"Faltan columnas en features_for_ml: {missing}"
+        raise ValueError(msg)
+    if len(features_for_ml) < _MIN_ROWS_FOR_TRAINING:
+        msg = (
+            f"Se necesitan al menos {_MIN_ROWS_FOR_TRAINING} filas en "
+            "features_for_ml para clasificación."
+        )
+        raise ValueError(msg)
+
     X = features_for_ml[feat_cols]
     y = features_for_ml[target]
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_train, X_test, y_train, y_test = _train_test_maybe_stratify(
         X,
         y,
         test_size=split["test_size"],
         random_state=split["random_state"],
-        stratify=y,
     )
 
     models: dict[str, Any] = {

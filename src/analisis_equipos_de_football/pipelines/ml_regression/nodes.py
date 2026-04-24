@@ -14,6 +14,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import StandardScaler
 
+_MIN_ROWS_FOR_TRAINING = 10
+
 
 def train_regression_bundle(
     features_for_ml: pd.DataFrame,
@@ -22,6 +24,17 @@ def train_regression_bundle(
 ) -> tuple[dict[str, Any], Any, pd.DataFrame]:
     feat_cols = list(regression["feature_columns"])
     target = regression["target"]
+    missing = [c for c in feat_cols + [target] if c not in features_for_ml.columns]
+    if missing:
+        msg = f"Faltan columnas en features_for_ml: {missing}"
+        raise ValueError(msg)
+    if len(features_for_ml) < _MIN_ROWS_FOR_TRAINING:
+        msg = (
+            f"Se necesitan al menos {_MIN_ROWS_FOR_TRAINING} filas en "
+            "features_for_ml para regresión."
+        )
+        raise ValueError(msg)
+
     X = features_for_ml[feat_cols]
     y = features_for_ml[target]
     X_train, X_test, y_train, y_test = train_test_split(

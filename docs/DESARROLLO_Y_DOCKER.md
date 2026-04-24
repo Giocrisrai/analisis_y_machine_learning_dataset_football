@@ -1,5 +1,7 @@
 # Datos, prueba end-to-end y Docker
 
+**Estudiantes:** la guía paso a paso (venv, Jupyter, qué hacer si algo falla) está en **[GUIA_ESTUDIANTES.md](GUIA_ESTUDIANTES.md)**. Este archivo profundiza en bootstrap, `make verify` y contenedores.
+
 ## 1. Obtener `database.sqlite`
 
 El catálogo Kedro apunta a `data/raw/database.sqlite` (no se versiona en git).

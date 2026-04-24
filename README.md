@@ -1,142 +1,123 @@
-# analisis_equipos_de_football
+# Análisis y modelos — datos de fútbol (Kedro)
 
-[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://kedro.org)
+[![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://docs.kedro.org)
 
-## Overview
+Proyecto para **exploración de datos**, **machine learning** (clasificación y regresión) y **pipelines reproducibles** con [Kedro 1.3](https://docs.kedro.org), pensado para **docencia** (CRISP-DM, métricas, comparación de modelos).
 
-This is your new Kedro project, which was generated using `kedro 1.3.1`.
+---
 
-Take a look at the [Kedro documentation](https://docs.kedro.org) to get started.
+## Inicio rápido (estudiantes)
 
-### Docencia: CRISP-DM y machine learning
+1. Leer **[docs/GUIA_ESTUDIANTES.md](docs/GUIA_ESTUDIANTES.md)** (instalación, datos, Jupyter, pruebas).
+2. Laboratorios en orden: **[notebooks/README.md](notebooks/README.md)**.
+3. Comprobar el entorno: `make verify` (tras `pip install -e ".[dev]"`).
 
-- **CRISP-DM y métricas:** [docs/guias/crispdm_y_machine_learning.md](docs/guias/crispdm_y_machine_learning.md) — fases, dónde está cada una en el repo, tablas de métricas.
-- **Modelos en profundidad + flujo integrado (diagramas, FAQ, rutas de código):** [docs/guias/modelos_y_flujo_integrado.md](docs/guias/modelos_y_flujo_integrado.md)
-- **Secuencia de notebooks (01–06 + opcional todo-en-uno):** [notebooks/README.md](notebooks/README.md)
+**Índice de toda la documentación:** [docs/README.md](docs/README.md)
 
-## Rules and guidelines
+---
 
-In order to get the best out of the template:
+## Docencia: teoría y guion
 
-* Don't remove any lines from the `.gitignore` file we provide
-* Make sure your results can be reproduced by following a data engineering convention
-* Don't commit data to your repository
-* Don't commit any credentials or your local configuration to your repository. Keep all your credentials and local configuration in `conf/local/`
+| Recurso | Descripción |
+|---------|-------------|
+| [docs/guias/crispdm_y_machine_learning.md](docs/guias/crispdm_y_machine_learning.md) | CRISP-DM, métricas, vínculo con el repositorio |
+| [docs/guias/modelos_y_flujo_integrado.md](docs/guias/modelos_y_flujo_integrado.md) | Algoritmos, diagramas notebook ↔ Kedro, FAQ |
+| [notebooks/README.md](notebooks/README.md) | Orden de los laboratorios y tiempos orientativos |
 
-## Datos y entorno reproducible
+---
 
-- **SQLite:** `python scripts/bootstrap_data.py` (intenta Hugging Face; si falla, genera una base mínima sintética). Detalle: [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md).
-- **Docker:** `docker compose build` (o `docker-compose build`) y `docker compose run --rm pipeline` o `pipeline-minimal`. Jupyter: `docker compose --profile lab up jupyter`. Requiere daemon Docker activo; detalles en [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md).
+## Datos
 
-## How to install dependencies
+- El archivo **`data/raw/database.sqlite`** no se versiona en Git.
+- Crearlo con: `python scripts/bootstrap_data.py` (red opcional; si falla, base sintética mínima).
+- Detalle y Docker: **[docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md)**
 
-Declare any dependencies in `requirements.txt` for `pip` installation.
+---
 
-To install them, run:
+## Instalación (resumen)
 
-```
+```bash
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install --upgrade pip
 pip install -r requirements.txt
+pip install -e .
+pip install -e ".[dev]"            # tests y make verify
+python scripts/bootstrap_data.py
+make verify                        # opcional: comprobar todo
 ```
 
-## How to run your Kedro pipeline
+Opcional — SHAP en notebooks: `pip install -e ".[explain]"`
 
-Con `data/raw/database.sqlite` en tu máquina, el flujo por defecto:
+---
 
-1. **`data_processing`**: arma `features_for_ml` (cuotas B365 + `outcome` + goles).
-2. **`ml_classification`**: entrena varios clasificadores, elige el mejor por F1 macro, guarda métricas JSON, modelo `.pkl` e importancias por permutación (CSV).
-3. **`ml_regression`**: igual para regresión sobre `home_team_goal`.
+## Pipeline Kedro
 
-Comandos útiles:
+Con la base ya en `data/raw/database.sqlite`:
 
-```
-# Todo el flujo (orden fijo en pipeline_registry)
-kedro run
-
-# Solo una etapa
-kedro run --pipeline data_processing
-kedro run --pipeline ml_classification
-kedro run --pipeline ml_regression
+```bash
+python -m kedro run
 ```
 
-Salidas típicas (ignoradas por git salvo `.gitkeep`): `data/05_model_input/`, `data/06_models/`, `data/08_reporting/`.
+Etapas por defecto (`pipeline_registry.py`):
 
-### Entorno y explicabilidad extra
+1. **data_processing** → `features_for_ml` (Parquet)
+2. **ml_classification** → métricas JSON, modelo `.pkl`, importancias CSV
+3. **ml_regression** → igual para regresión sobre goles del local
 
-```
-pip install -r requirements.txt
-# o, en modo editable con herramientas de desarrollo:
-pip install -e ".[dev]"
-# SHAP opcional para el notebook:
-pip install -e ".[explain]"
-```
+Parcial:
 
-## How to test your Kedro project
-
-Have a look at the file `tests/test_run.py` for instructions on how to write your tests. Chequeo completo (formato, lint, datos sintéticos, tests, pipeline):
-
-```
-make verify
+```bash
+python -m kedro run --pipeline data_processing
 ```
 
-Solo tests:
+Configuración: `conf/base/catalog.yml`, `conf/base/parameters.yml`.
 
-```
-pytest
-```
+---
 
-You can configure the coverage threshold in your project's `pyproject.toml` file under the `[tool.coverage.report]` section.
+## Jupyter
 
+Desde la **raíz del proyecto**:
 
-## Project dependencies
-
-To see and update the dependency requirements for your project use `requirements.txt`. You can install the project requirements with `pip install -r requirements.txt`.
-
-[Further information about project dependencies](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html#project-specific-dependencies)
-
-## How to work with Kedro and notebooks
-
-> Note: Using `kedro jupyter` or `kedro ipython` to run your notebook provides these variables in scope: `context`, 'session', `catalog`, and `pipelines`.
->
-> Jupyter, JupyterLab, and IPython are already included in the project requirements by default, so once you have run `pip install -r requirements.txt` you will not need to take any extra steps before you use them.
-
-### Jupyter
-To use Jupyter notebooks in your Kedro project, you need to install Jupyter:
-
-```
-pip install jupyter
-```
-
-After installing Jupyter, you can start a local notebook server:
-
-```
-kedro jupyter notebook
-```
-
-### JupyterLab
-To use JupyterLab, you need to install it:
-
-```
-pip install jupyterlab
-```
-
-You can also start JupyterLab:
-
-```
+```bash
 kedro jupyter lab
 ```
 
-### IPython
-And if you want to run an IPython session:
+Variables útiles: `catalog`, `context`, `session` (extensión `%load_ext kedro.ipython`).
 
+---
+
+## Pruebas y calidad
+
+```bash
+make help         # lista objetivos del Makefile
+make verify       # format + lint + bootstrap mínimo + pytest + kedro run
+pytest            # solo tests
 ```
-kedro ipython
+
+---
+
+## Docker (opcional)
+
+Requiere Docker en ejecución. Ver [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md):
+
+```bash
+docker compose build
+docker compose run --rm pipeline-minimal
+docker compose --profile lab up jupyter
 ```
 
-### How to ignore notebook output cells in `git`
-To automatically strip out all output cell contents before committing to `git`, you can use tools like [`nbstripout`](https://github.com/kynan/nbstripout). For example, you can add a hook in `.git/config` with `nbstripout --install`. This will run `nbstripout` before anything is committed to `git`.
+---
 
-> *Note:* Your output cells will be retained locally.
+## Buenas prácticas del template Kedro
 
-## Package your Kedro project
+- No eliminar reglas importantes del `.gitignore`.
+- No commitear datos grandes ni credenciales; configuración local en `conf/local/`.
+- Reproducibilidad: dependencias en `requirements.txt` / `pyproject.toml`.
 
-[Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/deploy/package_a_project/#package-an-entire-kedro-project)
+---
+
+## Más información
+
+- [Kedro: dependencias del proyecto](https://docs.kedro.org/en/stable/kedro_project_setup/dependencies.html)
+- [Empaquetado y despliegue](https://docs.kedro.org/en/stable/deploy/package_a_project/)

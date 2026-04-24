@@ -11,6 +11,18 @@ def build_ml_features_table(match: pd.DataFrame) -> pd.DataFrame:
 
     Outcome: 0 visita, 1 empate, 2 local — igual que en el notebook de exploración.
     """
+    required = [
+        "home_team_goal",
+        "away_team_goal",
+        "B365H",
+        "B365D",
+        "B365A",
+    ]
+    missing = [c for c in required if c not in match.columns]
+    if missing:
+        msg = f"Faltan columnas en la tabla Match: {missing}"
+        raise ValueError(msg)
+
     goal_diff = match["home_team_goal"] - match["away_team_goal"]
     outcome = np.select(
         [goal_diff > 0, goal_diff == 0, goal_diff < 0],
