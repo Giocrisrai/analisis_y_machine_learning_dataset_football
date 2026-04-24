@@ -1,9 +1,16 @@
+"""Pipeline Kedro: regresión (p. ej. goles del local).
+
+Misma separación que en clasificación: ``params:split`` y ``params:regression``
+en YAML; arquitectura numérica (Ridge, bosques, boosting) en ``nodes.py``.
+"""
+
 from kedro.pipeline import Pipeline, node
 
 from .nodes import train_regression_bundle
 
 
 def create_pipeline(**kwargs) -> Pipeline:
+    """Un nodo: misma tabla de features + `params:regression` → artefactos de regresión."""
     return Pipeline(
         [
             node(

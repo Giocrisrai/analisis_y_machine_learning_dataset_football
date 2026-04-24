@@ -1,11 +1,17 @@
-"""Project pipelines."""
+"""Registro de pipelines: orden del ``kedro run`` y pipelines por nombre.
+
+En clase: el pipeline **__default__** encadena, en secuencia fija:
+``data_processing`` → ``ml_classification`` → ``ml_regression`` (misma
+dependencia lógica que en ``docs/guias/modelos_y_flujo_integrado.md``).
+Cada fase se puede ejecutar aislada: ``kedro run --pipeline data_processing``.
+"""
 
 from __future__ import annotations
 
 from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
-# Orden estable del `kedro run` (evita depender del orden del filesystem).
+# Orden explícito (no alfabético del filesystem) para lecciones reproducibles.
 _DEFAULT_PIPELINE_ORDER = (
     "data_processing",
     "ml_classification",
@@ -14,10 +20,11 @@ _DEFAULT_PIPELINE_ORDER = (
 
 
 def register_pipelines() -> dict[str, Pipeline]:
-    """Register the project's pipelines.
+    """Devuelve todos los pipelines del paquete y define ``__default__`` como la suma ordenada.
 
     Returns:
-        A mapping from pipeline names to ``Pipeline`` objects.
+        Diccionario nombre → ``Pipeline``; ``__default__`` es el flujo completo
+        de enseñanza (preparar tabla → entrenar clasificación → regresión).
     """
     pipelines = find_pipelines(raise_errors=True)
     modular = {k: v for k, v in pipelines.items() if k != "__default__"}

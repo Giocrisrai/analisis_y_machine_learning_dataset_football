@@ -16,7 +16,23 @@ The `base` folder is for shared configuration, such as non-sensitive and project
 
 WARNING: Please do not put access credentials in the base configuration folder.
 
-## Instructions
+## Instrucciones (proyecto — docencia)
+
+- **`base/parameters.yml`**: partición train/test, nombres de columnas y targets
+  para clasificación y regresión. Es el lugar habitual para *ejercicios guiados*
+  (cambiar `test_size`, probar otras columnas de cuotas) sin editar los nodos.
+- **`base/catalog.yml`**: nombres de datasets Kedro, rutas a Parquet/JSON/CSV
+  y conexión SQLite. Ver comentarios al inicio de cada bloque.
+- **Hiperparámetros de scikit-learn** (por ejemplo `n_neighbors`, `C`,
+  `n_estimators`): en este repositorio están en el código Python de
+  `ml_classification/nodes.py` y `ml_regression/nodes.py` para que la lectura
+  del algoritmo y sus números vaya junta; se pueden externalizar a YAML si el
+  curso lo pide.
+- **No** versionar en Git credenciales ni `conf/local` con secretos; usar
+  `local/` solo en máquina personal si hace falta.
+
+Guías del curso: [docs/GUIA_ESTUDIANTES.md](../docs/GUIA_ESTUDIANTES.md) y
+[docs/guias/modelos_y_flujo_integrado.md](../docs/guias/modelos_y_flujo_integrado.md).
 
 
 

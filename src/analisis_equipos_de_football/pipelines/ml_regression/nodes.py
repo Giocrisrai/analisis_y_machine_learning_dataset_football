@@ -1,4 +1,17 @@
-"""Regresión: predecir goles del equipo local a partir de cuotas."""
+"""Regresión: predecir un valor continuo (p. ej. goles del equipo local).
+
+Estructura paralela a ``ml_classification/nodes.py`` (misma tabla de features):
+
+1. **Entrada** — ``features_for_ml``; columnas y target en ``params:regression``.
+2. **Partición** — ``train_test_split`` simple (objetivo continuo: no hay ``stratify``).
+3. **Modelos** — Ridge con escalado; Random Forest e HistGradientBoosting sin
+   requisito de escala (coherente con la guía de algoritmos).
+4. **Mejor modelo** — Mayor **R²** en test (misma regla de ranking que el leaderboard
+   en el JSON); en clase se contraste con el coste de errores grandes (MAE/RMSE).
+5. **Permutación** — Importancias con el estimador final sobre ``(X_test, y_test)``.
+
+Hiperparámetros numéricos: este archivo. Fracción test y nombres de columnas: YAML.
+"""
 
 from __future__ import annotations
 
@@ -22,6 +35,16 @@ def train_regression_bundle(
     split: dict[str, Any],
     regression: dict[str, Any],
 ) -> tuple[dict[str, Any], Any, pd.DataFrame]:
+    """Entrena regresores, elige el mejor por R² en test y calcula importancia por permutación.
+
+    Args:
+        features_for_ml: Misma tabla que alimenta clasificación (columnas alineadas).
+        split: ``test_size`` y ``random_state`` desde ``params:split``.
+        regression: ``feature_columns`` y ``target`` desde ``params:regression``.
+
+    Returns:
+        ``(metrics_dict, best_estimator, importance_df)`` para artefactos Kedro.
+    """
     feat_cols = list(regression["feature_columns"])
     target = regression["target"]
     missing = [c for c in feat_cols + [target] if c not in features_for_ml.columns]
@@ -37,6 +60,8 @@ def train_regression_bundle(
 
     X = features_for_ml[feat_cols]
     y = features_for_ml[target]
+
+    # Reproducibilidad: misma clave que en clasificación (``parameters.yml``).
     X_train, X_test, y_train, y_test = train_test_split(
         X,
         y,
@@ -86,13 +111,15 @@ def train_regression_bundle(
             best_est = est
 
     assert best_est is not None
+
+    # Paralelizar permutación puede fallar en entornos sin semáforos/CPU; 1 = más portable.
     perm = permutation_importance(
         best_est,
         X_test,
         y_test,
         n_repeats=15,
         random_state=split["random_state"],
-        n_jobs=-1,
+        n_jobs=1,
     )
     importance = pd.DataFrame(
         {

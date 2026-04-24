@@ -1,7 +1,7 @@
-# Here you can define all your datasets by using simple YAML syntax.
-#
-# Documentation for this file format can be found in "The Data Catalog"
-# Link: https://docs.kedro.org/en/stable/catalog-data/introduction/#data-catalog
+# Catálogo Kedro: nombres lógicos → datasets (SQL, Parquet, JSON, Pickle, CSV).
+# En clases: ``catalog.load("match")`` en notebooks; ``kedro run`` rellena salidas
+# en ``data/05_model_input/`` y ``data/08_reporting/`` según las rutas de abajo.
+# Documentación: https://docs.kedro.org/en/stable/catalog-data/introduction/#data-catalog
 
 # Base de datos SQLite en capa raw (data/raw/database.sqlite).
 # La URL es relativa al directorio raíz del proyecto al ejecutar `kedro run` / notebooks.

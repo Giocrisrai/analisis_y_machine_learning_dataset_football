@@ -1,11 +1,19 @@
+# Parámetros Kedro: experimentos (columnas, partición) sin tocar el código.
+# Hiperparámetros de algoritmos (C, n_estimators, max_depth, etc.): ver nodos en
+# src/.../pipelines/ml_*/nodes.py o mover esos dicts a YAML en una tarea avanzada.
+
+# Fracción reservada para evaluación y semilla (reproducibilidad train/test).
 split:
   test_size: 0.2
   random_state: 42
 
+# Clasificación multiclase: columnas de entrada (cuotas) y columna de etiqueta
+# ya construida en data_processing (ver ``outcome`` en nodes de preparación).
 classification:
   feature_columns: ["B365H", "B365D", "B365A"]
   target: outcome
 
+# Regresión: misma lógica de features; el target es un número (goles del local).
 regression:
   feature_columns: ["B365H", "B365D", "B365A"]
   target: home_team_goal

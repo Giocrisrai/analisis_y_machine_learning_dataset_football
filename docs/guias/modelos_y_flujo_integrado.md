@@ -194,6 +194,18 @@ A continuación, cada bloque sigue la misma estructura: **idea**, **cómo decide
 | Orden del `kedro run` | `src/.../pipeline_registry.py` |
 | Datasets y rutas | `conf/base/catalog.yml` |
 | Columnas y split | `conf/base/parameters.yml` |
+| Dónde están los *números* de cada algoritmo (C, k, n_estimators, …) | Código: `ml_classification/nodes.py`, `ml_regression/nodes.py` (comentado por secciones) |
+
+### 8.1 Qué poner en `parameters.yml` y qué dejar en Python
+
+- **En YAML (ideal para talleres sin tocar lógica):** proporción y semilla del split;
+  qué columnas usan `X` y qué columna es `y` (clasificación vs regresión).
+- **En los nodos (`nodes.py`):** definición del *diccionario* de modelos, escaladores
+  y **hiperparámetros fijos** de cada estimador, más el criterio con el que se elige
+  el “mejor” (F1 macro en test para clasificación; R² en test para regresión).
+- **Por qué:** mantiene el código leíble en pantalla mientras explicas “este bloque
+  entrena, este rankea, este explica”. Si en una unidad el objetivo es *GridSearch*
+  o afinado, se puede añadir una sección en YAML o un notebook que lea un grid.
 
 ---
 

@@ -1,4 +1,11 @@
-"""Nodos de preparación de datos para modelado."""
+"""Preparación de datos (CRISP-DM: fase «Data preparation»).
+
+Responsabilidad: transformar la tabla `Match` en una fila analítica por partido
+lista para entrenar modelos. Misma lógica que en `02_preparacion_datos.ipynb`.
+
+Orden lógico en el proyecto:
+  raw (SQLite) → este nodo → `features_for_ml` (Parquet) → pipelines de ML.
+"""
 
 from __future__ import annotations
 
@@ -7,9 +14,20 @@ import pandas as pd
 
 
 def build_ml_features_table(match: pd.DataFrame) -> pd.DataFrame:
-    """Une goles, outcome y cuotas Bet365 (filas con cuotas completas).
+    """Construye la tabla de modelado: cuotas, goles y etiqueta de resultado.
 
-    Outcome: 0 visita, 1 empate, 2 local — igual que en el notebook de exploración.
+    Pasos (útiles para explicar en pizarra o informe):
+      1. Comprobar columnas mínimas: goles y cuotas B365.
+      2. Derivar `outcome` multiclase a partir de la diferencia de goles
+         (no se predice con datos posteriores al partido; solo explicamos
+         el mapeo etiqueta↔gol).
+      3. Quedarse solo con filas con las tres cuotas presentes
+         (``dropna`` en B365) para evitar entrenar con ausencias estructurales.
+
+    Codificación de ``outcome`` (alineada con los notebooks y clasificación):
+      - 0: gana visita
+      - 1: empate
+      - 2: gana local
     """
     required = [
         "home_team_goal",

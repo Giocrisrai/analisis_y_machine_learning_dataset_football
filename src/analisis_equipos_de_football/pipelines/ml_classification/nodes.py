@@ -1,4 +1,24 @@
-"""Entrenamiento y evaluación de clasificación multiclase (resultado del partido)."""
+"""Clasificación multiclase: predecir resultado (visita / empate / local).
+
+Flujo didáctico (alinear con notebooks 03 y 05 y con ``modelos_y_flujo_integrado.md``):
+
+1. **Entrada** — DataFrame ``features_for_ml`` (mismas filas y columnas que en
+   preparación; columnas de features y target vienen de ``params:classification``).
+2. **Partición** — Un solo ``train_test_split``; en clasificación se usa
+   *estratificación* cuando cada clase tiene suficientes ejemplos (ver
+   ``_train_test_maybe_stratify``); evita desbalance extremo train/test.
+3. **Banco de modelos** — Varios estimadores (lineales con escala, k-NN, bosques);
+   hiperparámetros **fijos en este archivo**; split/columnas en ``parameters.yml``.
+4. **Selección del "mejor"** — Por **F1 macro** en el conjunto de *test* (misma
+   regla para todos; en investigación se discutiría validación cruzada o corte
+   temporal).
+5. **Salida** — Métricas (JSON), estimador entrenado (.pkl), importancia por
+   permutación (CSV) sobre el modelo ganador y ``X_test``.
+
+Nota de configuración: ``conf/base/parameters.yml`` controla *qué* columnas y
+*qué* fracción de test; los *números* internos de cada algoritmo (``C``,
+``n_estimators``, etc.) viven aquí salvo que el curso mueva esos dicts a YAML.
+"""
 
 from __future__ import annotations
 
@@ -15,11 +35,14 @@ from sklearn.pipeline import Pipeline as SkPipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
+# Mínimo de filas para no romper entrenamiento en bases sintéticas pequeñas.
 _MIN_ROWS_FOR_TRAINING = 10
+# sklearn exige al menos 2 ejemplos por clase para stratify; si no, se omite.
 _MIN_CLASS_COUNT_FOR_STRATIFY = 2
 
 
 def _jsonable(obj: Any) -> Any:
+    """Convierte tipos numpy / anidados a estructura serializable en JSON (métricas)."""
     if hasattr(obj, "item"):
         return obj.item()
     if isinstance(obj, dict):
@@ -38,7 +61,11 @@ def _train_test_maybe_stratify(
     test_size: float,
     random_state: int,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
-    """Stratify solo si cada clase tiene masa suficiente; si no, sklearn falla."""
+    """Partición train/test, con estratificación solo cuando sklearn la permite.
+
+    Con pocas filas o clases casi vacías, ``stratify=y`` lanza error; se reintenta
+    sin estratificar para que ``kedro run`` no falle en datos mínimos de práctica.
+    """
     kwargs: dict[str, Any] = {
         "test_size": test_size,
         "random_state": random_state,
@@ -57,6 +84,17 @@ def train_classification_bundle(
     split: dict[str, Any],
     classification: dict[str, Any],
 ) -> tuple[dict[str, Any], Any, pd.DataFrame]:
+    """Entrena varios clasificadores, elige el mejor por F1 macro y explica con permutación.
+
+    Args:
+        features_for_ml: Tabla ya preparada (mismo esquema que el Parquet de Kedro).
+        split: Desde ``params:split`` — ``test_size``, ``random_state``.
+        classification: Desde ``params:classification`` — ``feature_columns``, ``target``.
+
+    Returns:
+        Tupla ``(metrics_dict, best_estimator, importance_df)`` para el catálogo
+        (JSON, Pickle, CSV respectivamente).
+    """
     feat_cols = list(classification["feature_columns"])
     target = classification["target"]
     missing = [c for c in feat_cols + [target] if c not in features_for_ml.columns]
@@ -72,6 +110,8 @@ def train_classification_bundle(
 
     X = features_for_ml[feat_cols]
     y = features_for_ml[target]
+
+    # --- Partición reproducible (semilla desde YAML) ---
     X_train, X_test, y_train, y_test = _train_test_maybe_stratify(
         X,
         y,
@@ -79,6 +119,9 @@ def train_classification_bundle(
         random_state=split["random_state"],
     )
 
+    # --- Modelos: sklearn Pipeline = preprocesar una fila (escala + clasificador) ---
+    # Lineales y k-NN llevan StandardScaler; árboles suelen ir sin escala (invariante
+    # a reordenar umbrales por columna de forma monótona). Ver guía de modelos.
     models: dict[str, Any] = {
         "LogisticRegression": SkPipeline(
             [
@@ -116,6 +159,7 @@ def train_classification_bundle(
         ),
     }
 
+    # --- Misma métrica de ranking para todos (F1 macro en test) ---
     leaderboard: list[dict[str, Any]] = []
     best_name = ""
     best_f1 = -1.0
@@ -148,13 +192,16 @@ def train_classification_bundle(
         zero_division=0,
     )
 
+    # --- Explicabilidad: solo el estimador elegido, sobre el mismo test ---
+    # n_jobs=1: importancia por permutación usa joblib/loky; 1 evita fallos en CI/sandboxes
+    # restringidos; con pocas filas el tiempo sigue siendo aceptable en docencia.
     perm = permutation_importance(
         best_est,
         X_test,
         y_test,
         n_repeats=15,
         random_state=split["random_state"],
-        n_jobs=-1,
+        n_jobs=1,
     )
     importance = pd.DataFrame(
         {
