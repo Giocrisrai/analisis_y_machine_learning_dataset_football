@@ -4,11 +4,17 @@
 
 ## 1. Obtener `database.sqlite`
 
-El catálogo Kedro apunta a `data/raw/database.sqlite` (no se versiona en git).
+El catálogo Kedro apunta a `data/raw/database.sqlite`. Para esta clase, la base completa está versionada con **Git LFS**.
+
+Si clonaste el repo y falta la base completa:
+
+```bash
+git lfs pull
+```
 
 ### Opción A — Script automático (recomendado)
 
-Desde la **raíz del repositorio**:
+Si no tienes Git LFS o quieres regenerar la base desde cero, desde la **raíz del repositorio**:
 
 ```bash
 python scripts/bootstrap_data.py

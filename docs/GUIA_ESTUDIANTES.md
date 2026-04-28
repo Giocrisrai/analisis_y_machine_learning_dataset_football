@@ -20,6 +20,7 @@ Esta guía es el **punto de entrada** para trabajar en el laboratorio. Sigue los
 | **Python** | 3.10 o superior (recomendado 3.11) |
 | **uv** | Recomendado para instalar exactamente lo definido en `uv.lock` |
 | **Git** | Opcional, para clonar el repositorio |
+| **Git LFS** | Recomendado si quieres recibir la base SQLite completa incluida para la clase |
 | **Espacio** | ~500 MB si descargas la base completa; la base **mínima** sintética es mucho más pequeña |
 
 No hace falta instalar SQLite a mano: Python ya trae el módulo `sqlite3`.
@@ -73,9 +74,15 @@ Opcional (gráficos SHAP en algunos notebooks):
 uv sync --extra dev --extra explain
 ```
 
-### 3.3 Crear la base de datos local
+### 3.3 Crear o traer la base de datos local
 
-El archivo **`data/raw/database.sqlite`** no viene en Git (es demasiado grande o es dato local).
+Para esta clase, **`data/raw/database.sqlite`** está trackeado con **Git LFS**. Si clonaste el repo y el archivo no se descargó completo, ejecuta:
+
+```bash
+git lfs pull
+```
+
+Si no tienes Git LFS o quieres regenerar una base local:
 
 ```bash
 python scripts/bootstrap_data.py

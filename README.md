@@ -28,8 +28,9 @@ Proyecto para **exploración de datos**, **machine learning** (clasificación y 
 
 ## Datos
 
-- El archivo **`data/raw/database.sqlite`** no se versiona en Git.
-- Crearlo con: `python scripts/bootstrap_data.py` (red opcional; si falla, base sintética mínima).
+- El archivo **`data/raw/database.sqlite`** se distribuye con **Git LFS** para la clase.
+- Si al clonar no aparece la base completa, ejecuta: `git lfs pull`.
+- Si no tienes LFS o quieres regenerar datos: `python scripts/bootstrap_data.py` (red opcional; si falla, base sintética mínima).
 - Detalle y Docker: **[docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md)**
 
 ---
