@@ -20,6 +20,9 @@ dependencies = [
     "matplotlib>=3.8",
     "seaborn>=0.13",
     "pyarrow>=14.0",
+    "kedro-viz>=12.3.0",
+    "nbconvert>=7.17.1",
+    "ipykernel>=6.31.0",
 ]
 
 [project.scripts]

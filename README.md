@@ -10,7 +10,7 @@ Proyecto para **exploración de datos**, **machine learning** (clasificación y 
 
 1. Leer **[docs/GUIA_ESTUDIANTES.md](docs/GUIA_ESTUDIANTES.md)** (instalación, datos, Jupyter, pruebas).
 2. Laboratorios en orden: **[notebooks/README.md](notebooks/README.md)**.
-3. Comprobar el entorno: `make verify` (tras `pip install -e ".[dev]"`).
+3. Comprobar el entorno: `make verify` (tras `uv sync --extra dev` o `pip install -e ".[dev]"`).
 
 **Índice de toda la documentación:** [docs/README.md](docs/README.md)
 
@@ -39,15 +39,13 @@ Proyecto para **exploración de datos**, **machine learning** (clasificación y 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install -e .
-pip install -e ".[dev]"            # tests y make verify
+pip install --upgrade pip uv
+uv sync --extra dev                # entorno reproducible con uv.lock
 python scripts/bootstrap_data.py
 make verify                        # opcional: comprobar todo
 ```
 
-Opcional — SHAP en notebooks: `pip install -e ".[explain]"`
+Opcional — SHAP en notebooks: `uv sync --extra dev --extra explain`
 
 ---
 
@@ -92,6 +90,7 @@ Variables útiles: `catalog`, `context`, `session` (extensión `%load_ext kedro.
 ```bash
 make help         # lista objetivos del Makefile
 make verify       # format + lint + bootstrap mínimo + pytest + kedro run
+make verify-notebooks # ejecuta notebooks en memoria
 pytest            # solo tests
 ```
 
@@ -105,6 +104,7 @@ Requiere Docker en ejecución. Ver [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO
 docker compose build
 docker compose run --rm pipeline-minimal
 docker compose --profile lab up jupyter
+docker compose --profile viz up kedro-viz
 ```
 
 ---

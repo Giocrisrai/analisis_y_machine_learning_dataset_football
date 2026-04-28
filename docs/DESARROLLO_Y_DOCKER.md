@@ -1,6 +1,6 @@
 # Datos, prueba end-to-end y Docker
 
-**Estudiantes:** la guía paso a paso (venv, Jupyter, qué hacer si algo falla) está en **[GUIA_ESTUDIANTES.md](GUIA_ESTUDIANTES.md)**. Este archivo profundiza en bootstrap, `make verify` y contenedores.
+**Estudiantes:** la guía paso a paso (`uv`, Jupyter, qué hacer si algo falla) está en **[GUIA_ESTUDIANTES.md](GUIA_ESTUDIANTES.md)**. Este archivo profundiza en bootstrap, `make verify`, Kedro Viz y contenedores.
 
 ## 1. Obtener `database.sqlite`
 
@@ -17,7 +17,7 @@ python scripts/bootstrap_data.py
 - Intenta descargar la base pública en Hugging Face (réplica del *European Soccer Database*).
 - Si la red falla, genera una SQLite **mínima sintética** (tablas del catálogo; tabla `Match` poblada) suficiente para `kedro run` y la mayoría de notebooks.
 
-Forzar solo sintética:
+Forzar solo sintética (sobrescribe `data/raw/database.sqlite`):
 
 ```bash
 python scripts/bootstrap_data.py --source minimal --force
@@ -43,14 +43,13 @@ Chequeo recomendado (requiere `pip install -e ".[dev]"` y `make`):
 make verify
 ```
 
-Equivale a: formatear con Ruff, lint, regenerar SQLite mínima, `pytest` y `kedro run`.
+Equivale a: formatear con Ruff, lint, crear SQLite mínima si falta, `pytest` y `kedro run`.
 
 Pasos manuales:
 
 ```bash
-pip install -r requirements.txt
-pip install -e ".[dev]"
-python scripts/bootstrap_data.py --source minimal --force   # o sin flags para intentar HF
+uv sync --extra dev
+python scripts/bootstrap_data.py --source minimal           # o sin flags para intentar HF
 kedro run
 pytest -q
 ```
@@ -88,7 +87,7 @@ Solo datos sintéticos + pipeline (sin depender de Hugging Face):
 docker compose run --rm pipeline-minimal
 ```
 
-**Tests** dentro del contenedor (usa base sintética):
+**Tests** dentro del contenedor (usa base sintética en un volumen separado):
 
 ```bash
 docker compose run --rm test
@@ -102,7 +101,24 @@ docker compose --profile lab up jupyter
 
 Luego abre `http://localhost:8888` y revisa el token que imprime el contenedor.
 
-Los datos persistentes van al volumen Docker `football_data` (SQLite y salidas de Kedro).
+**Kedro Viz** para explicar el grafo de nodos, datasets y artefactos:
+
+```bash
+docker compose --profile viz up kedro-viz
+```
+
+Luego abre `http://localhost:4141`.
+
+### Volúmenes Docker
+
+- `football_data`: datos persistentes de clase (`data/raw/database.sqlite` y salidas Kedro).
+- `football_test_data`: datos aislados para `docker compose run --rm test`; puede regenerarse sin tocar la base usada en Jupyter o demos.
+
+Los servicios `pipeline-minimal`, `jupyter` y `kedro-viz` no usan `--force`, por lo que no reemplazan una base existente válida. Si necesitas resetear la demo, elimina explícitamente el volumen:
+
+```bash
+docker volume rm analisis-equipos-de-football_football_data
+```
 
 ---
 

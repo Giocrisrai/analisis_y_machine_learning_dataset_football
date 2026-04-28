@@ -18,6 +18,7 @@ Esta guía es el **punto de entrada** para trabajar en el laboratorio. Sigue los
 | Requisito | Versión / nota |
 |-----------|----------------|
 | **Python** | 3.10 o superior (recomendado 3.11) |
+| **uv** | Recomendado para instalar exactamente lo definido en `uv.lock` |
 | **Git** | Opcional, para clonar el repositorio |
 | **Espacio** | ~500 MB si descargas la base completa; la base **mínima** sintética es mucho más pequeña |
 
@@ -49,24 +50,27 @@ python -m venv .venv
 
 Deberías ver `(.venv)` al inicio de la línea en la terminal.
 
-### 3.2 Instalar dependencias
+### 3.2 Instalar dependencias con `uv` (recomendado)
+
+```bash
+python -m pip install --upgrade pip uv
+uv sync --extra dev
+```
+
+Esto crea/actualiza `.venv` y deja instaladas las dependencias necesarias para notebooks, Kedro, Kedro Viz y pruebas.
+
+Alternativa con `pip` si no puedes usar `uv`:
 
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-pip install -e .
-```
-
-Para poder ejecutar las **pruebas automáticas** y el comando `make verify`:
-
-```bash
 pip install -e ".[dev]"
 ```
 
 Opcional (gráficos SHAP en algunos notebooks):
 
 ```bash
-pip install -e ".[explain]"
+uv sync --extra dev --extra explain
 ```
 
 ### 3.3 Crear la base de datos local
@@ -94,7 +98,7 @@ Desde la raíz del proyecto:
 make verify
 ```
 
-Esto ejecuta: formato/lint (Ruff), regenera datos mínimos si hace falta, **pytest** y **`kedro run`**. Si termina sin errores, tu entorno está bien configurado.
+Esto ejecuta: formato/lint (Ruff), crea datos mínimos si hace falta, **pytest** y **`kedro run`**. Si termina sin errores, tu entorno está bien configurado.
 
 Si tienes `make`, puedes ver todos los comandos del proyecto con `make help`.
 
@@ -104,6 +108,12 @@ Si no tienes `make` instalado (algunos Windows), ejecuta manualmente:
 python scripts/bootstrap_data.py --source minimal --force
 pytest -q
 python -m kedro run
+```
+
+Para comprobar que los notebooks corren de principio a fin:
+
+```bash
+make verify-notebooks
 ```
 
 ---
@@ -141,6 +151,8 @@ Eso carga `catalog`, `context`, etc.
 | 4 | `04_regresion_goles.ipynb` | Regresión y errores |
 | 5 | `05_explicabilidad_evaluacion.ipynb` | Importancia de variables, SHAP opcional |
 | 6 | `06_pipeline_Kedro.ipynb` | Lanzar el pipeline completo desde el notebook |
+| 7 | `07_validacion_cruzada_hiperparametros.ipynb` | KFold, cross validation y búsqueda de hiperparámetros |
+| 8 | `08_no_supervisado_clustering.ipynb` | PCA, K-Means y evaluación no supervisada |
 
 **Atajo:** `Exploracion_de_datos.ipynb` concentra varias etapas en un solo archivo (repaso o demo rápida).
 
@@ -198,6 +210,7 @@ Catálogo de datasets: `conf/base/catalog.yml`.
 | `kedro: command not found` | Activa el `.venv` y `pip install -r requirements.txt` |
 | `No module named 'analisis_equipos_de_football'` | Desde la raíz: `pip install -e .` |
 | Jupyter no ve el `catalog` | Abre Jupyter con `kedro jupyter lab` desde la **raíz** del repo |
+| Quiero ver el flujo visual de Kedro | Ejecuta `kedro viz` o `docker compose --profile viz up kedro-viz` |
 | Notebooks 01–02 bien pero tablas de jugadores vacías | Normal con la base **sintética**; para datos reales usa descarga completa |
 | `make: command not found` | Instala `make` o usa los comandos manuales del apartado 3.4 |
 

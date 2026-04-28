@@ -21,8 +21,9 @@ def build_ml_features_table(match: pd.DataFrame) -> pd.DataFrame:
       2. Derivar `outcome` multiclase a partir de la diferencia de goles
          (no se predice con datos posteriores al partido; solo explicamos
          el mapeo etiqueta↔gol).
-      3. Quedarse solo con filas con las tres cuotas presentes
-         (``dropna`` en B365) para evitar entrenar con ausencias estructurales.
+      3. Quedarse solo con filas completas en goles y cuotas. Los goles son la
+         fuente de las etiquetas; no deben imputarse ni convertirse a una clase
+         por accidente.
 
     Codificación de ``outcome`` (alineada con los notebooks y clasificación):
       - 0: gana visita
@@ -50,5 +51,5 @@ def build_ml_features_table(match: pd.DataFrame) -> pd.DataFrame:
     cols = feat_cols + ["home_team_goal", "away_team_goal"]
     df = match[cols].copy()
     df["outcome"] = outcome
-    df = df.dropna(subset=feat_cols)
+    df = df.dropna(subset=cols)
     return df.reset_index(drop=True)

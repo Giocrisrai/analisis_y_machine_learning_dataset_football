@@ -122,6 +122,7 @@ def train_classification_bundle(
     # --- Modelos: sklearn Pipeline = preprocesar una fila (escala + clasificador) ---
     # Lineales y k-NN llevan StandardScaler; árboles suelen ir sin escala (invariante
     # a reordenar umbrales por columna de forma monótona). Ver guía de modelos.
+    knn_neighbors = min(15, len(X_train))
     models: dict[str, Any] = {
         "LogisticRegression": SkPipeline(
             [
@@ -138,10 +139,16 @@ def train_classification_bundle(
                 ),
             ]
         ),
-        "KNN_k15": SkPipeline(
+        f"KNN_k{knn_neighbors}": SkPipeline(
             [
                 ("scale", StandardScaler()),
-                ("clf", KNeighborsClassifier(n_neighbors=15, weights="distance")),
+                (
+                    "clf",
+                    KNeighborsClassifier(
+                        n_neighbors=knn_neighbors,
+                        weights="distance",
+                    ),
+                ),
             ]
         ),
         "RandomForest": RandomForestClassifier(
@@ -149,7 +156,7 @@ def train_classification_bundle(
             max_depth=16,
             min_samples_leaf=5,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=1,
         ),
         "HistGradientBoosting": HistGradientBoostingClassifier(
             max_iter=200,
@@ -187,6 +194,7 @@ def train_classification_bundle(
     report = classification_report(
         y_test,
         y_pred_best,
+        labels=[0, 1, 2],
         target_names=["away_win", "draw", "home_win"],
         output_dict=True,
         zero_division=0,

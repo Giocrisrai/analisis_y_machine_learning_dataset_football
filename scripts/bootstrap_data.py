@@ -34,6 +34,39 @@ HF_SQLITE_URL = (
     "https://huggingface.co/datasets/julien-c/kaggle-hugomathien-soccer/"
     "resolve/main/database.sqlite"
 )
+REQUIRED_MATCH_COLUMNS = {
+    "home_team_goal",
+    "away_team_goal",
+    "B365H",
+    "B365D",
+    "B365A",
+}
+
+
+def has_expected_sqlite_schema(db_path: Path) -> bool:
+    """Comprueba que SQLite exista, sea legible y tenga las columnas usadas en clase."""
+    if not db_path.is_file():
+        return False
+    try:
+        with sqlite3.connect(db_path) as con:
+            integrity = con.execute("PRAGMA integrity_check").fetchone()
+            if not integrity or integrity[0] != "ok":
+                return False
+            table_exists = con.execute(
+                """
+                SELECT 1
+                FROM sqlite_master
+                WHERE type = 'table' AND name = 'Match'
+                """
+            ).fetchone()
+            if not table_exists:
+                return False
+            columns = {
+                row[1] for row in con.execute("PRAGMA table_info('Match')").fetchall()
+            }
+            return REQUIRED_MATCH_COLUMNS.issubset(columns)
+    except sqlite3.Error:
+        return False
 
 
 def download_file(url: str, dest: Path, timeout: int = 600) -> None:
@@ -158,9 +191,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if dest.is_file() and not args.force:
         size = dest.stat().st_size
-        if size > MIN_BYTES_SKIP_REGEN:
+        if size > MIN_BYTES_SKIP_REGEN and has_expected_sqlite_schema(dest):
             print(f"Ya existe {dest} ({size // 1024} KiB). Usa --force para regenerar.")
             return 0
+        print(f"{dest} existe, pero no pasa validación de esquema; se regenerará.")
 
     if args.source == "minimal":
         print("Generando SQLite mínima sintética…")

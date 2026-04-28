@@ -81,7 +81,7 @@ def train_regression_bundle(
             max_depth=16,
             min_samples_leaf=5,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=1,
         ),
         "HistGradientBoostingRegressor": HistGradientBoostingRegressor(
             max_iter=200,
