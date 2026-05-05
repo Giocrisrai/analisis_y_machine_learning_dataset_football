@@ -8,7 +8,7 @@ Documento para **explicar en clase** cómo encajan los algoritmos que usa el rep
 
 ## 0. Secuencia de notebooks (docencia paso a paso)
 
-Los archivos `01_…` a `06_…` en la carpeta `notebooks/` siguen CRISP-DM en orden; el índice con descripción de cada uno está en [notebooks/README.md](../../notebooks/README.md). El archivo `Exploracion_de_datos.ipynb` es la variante **todo-en-uno** para repaso o demo rápida.
+Los archivos `01_…` a `08_…` en la carpeta `notebooks/` siguen CRISP-DM en orden sugerido; el índice detallado está en [notebooks/README.md](../../notebooks/README.md). El **07** enlaza explícitamente el flujo `kedro run` (un split, artefactos) con **CV y tuning** en sklearn (sección 4.1 más abajo). `Exploracion_de_datos.ipynb` es la variante **todo-en-uno** para repaso o demo rápida.
 
 ---
 
@@ -102,6 +102,21 @@ Un modelo guardado en `.pkl` suele ser ya un **Pipeline de sklearn** (cuando apl
 
 ---
 
+## 4.1. Evaluación en Kedro (`kedro run`) vs laboratorio 07 (CV y hiperparámetros)
+
+| | **`ml_classification` / `ml_regression` (Kedro)** | **`notebooks/07_validacion_cruzada_hiperparametros.ipynb`** |
+|--|-----------------------------------------------------|-------------------------------------------------------------|
+| **Partición** | Un `train_test_split` reproducible (estratificado en clasificación cuando hay ejemplos suficientes por clase). | Varios folds: `StratifiedKFold` (clf) y `KFold` (reg). |
+| **Comparación de modelos** | Leaderboard en el **conjunto de test** de ese split. | `cross_validate`: media y desviación sobre folds. |
+| **Hiperparámetros** | Fijos en `nodes.py` (comentario explícito en código). | `GridSearchCV` y `RandomizedSearchCV` dentro de cada fold de CV. |
+| **Objetivo docente** | Artefacto **simple y reproducible**: JSON, `.pkl`, CSV; buen “cierre” CRISP-DM. | Enseñar **metodología**: inestabilidad del split, tuning sin mirar solo un test. |
+
+**Mensaje para el aula:** Kedro responde a “¿cómo dejo versionado un flujo que entrena y exporta modelos?”. El notebook 07 responde a “¿cómo sé si el número que vi en test fue suerte del split?”. No se contradicen: se **superponen**.
+
+**Recomendación profesional (opcional para alumnos avanzados):** si el “mejor modelo” se elige tras tunear hiperparámetros, lo riguroso es reservar un **conjunto de validación** o usar **validación anidada** (CV dentro de cada fold externo) para la selección, y dejar un **test final** intacto solo para la cita de desempeño. En este repositorio, el cierre del notebook 07 ya alerta sobre separar selección y evaluación final; en Kedro el ranking en test es deliberadamente **didáctico y compacto**, no un informe clínico de competición.
+
+---
+
 ## 5. Guía por modelo: qué decir en clase
 
 A continuación, cada bloque sigue la misma estructura: **idea**, **cómo decide**, **en este proyecto**, **qué tunear**, **caveats**.
@@ -180,6 +195,7 @@ A continuación, cada bloque sigue la misma estructura: **idea**, **cómo decide
 - **¿Por qué escalamos antes de logística, SVM y k-NN?** Porque usan distancias o penalizaciones que **no son invariantes** a cambiar la escala de las columnas; las cuotas tienen magnitudes parecidas pero el escalado es buena práctica y obligatoria para comparar coeficientes.
 - **¿Por qué Random Forest no lleva escalado aquí?** Los árboles ordenan por umbrales en cada variable; un escalado monotónico por columna **no cambia** los splits óptimos (salvo detalles numéricos).
 - **¿El mejor modelo en test es siempre el mejor en producción?** No: hay **varianza del split**, posible **fuga temporal** si mezclamos temporadas, y **deriva** del mercado de apuestas.
+- **¿Por qué `kedro run` no usa GridSearch ni validación cruzada?** Para mantener el pipeline **corto, estable y fácil de seguir en pantalla**; el lugar del curso para CV, `GridSearchCV` y `RandomizedSearchCV` es el **notebook 07** (sección 4.1 de este documento enlaza ambos mundos).
 - **¿Qué parte es “metodología” y qué parte es “código”?** Metodología = decisiones documentadas; código = implementación que las respeta. Kedro ayuda a que no se pierdan las decisiones entre el notebook y la entrega.
 
 ---
@@ -204,8 +220,9 @@ A continuación, cada bloque sigue la misma estructura: **idea**, **cómo decide
   y **hiperparámetros fijos** de cada estimador, más el criterio con el que se elige
   el “mejor” (F1 macro en test para clasificación; R² en test para regresión).
 - **Por qué:** mantiene el código leíble en pantalla mientras explicas “este bloque
-  entrena, este rankea, este explica”. Si en una unidad el objetivo es *GridSearch*
-  o afinado, se puede añadir una sección en YAML o un notebook que lea un grid.
+  entrena, este rankea, este explica”. La búsqueda sistemática de hiperparámetros
+  y la comparación por CV están en **`notebooks/07_validacion_cruzada_hiperparametros.ipynb`**
+  (no duplicadas en Kedro a propósito; ver sección 4.1).
 
 ---
 

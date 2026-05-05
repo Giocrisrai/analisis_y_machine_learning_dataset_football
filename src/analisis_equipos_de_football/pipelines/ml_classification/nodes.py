@@ -10,8 +10,9 @@ Flujo didáctico (alinear con notebooks 03 y 05 y con ``modelos_y_flujo_integrad
 3. **Banco de modelos** — Varios estimadores (lineales con escala, k-NN, bosques);
    hiperparámetros **fijos en este archivo**; split/columnas en ``parameters.yml``.
 4. **Selección del "mejor"** — Por **F1 macro** en el conjunto de *test* (misma
-   regla para todos; en investigación se discutiría validación cruzada o corte
-   temporal).
+   regla para todos). La comparación por folds y el tuning están en
+   ``notebooks/07_validacion_cruzada_hiperparametros.ipynb`` y en
+   ``docs/guias/modelos_y_flujo_integrado.md`` (sección 4.1).
 5. **Salida** — Métricas (JSON), estimador entrenado (.pkl), importancia por
    permutación (CSV) sobre el modelo ganador y ``X_test``.
 

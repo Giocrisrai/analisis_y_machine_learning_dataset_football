@@ -10,6 +10,9 @@ from analisis_equipos_de_football.pipelines.data_processing.nodes import (
 from analisis_equipos_de_football.pipelines.ml_classification.nodes import (
     train_classification_bundle,
 )
+from analisis_equipos_de_football.pipelines.ml_regression.nodes import (
+    train_regression_bundle,
+)
 from scripts.bootstrap_data import create_minimal_database, has_expected_sqlite_schema
 
 EXPECTED_COMPLETE_ROWS = 2
@@ -60,6 +63,33 @@ def test_classification_handles_small_training_split_and_missing_classes() -> No
     assert model is not None
     assert set(importance["feature"]) == {"B365H", "B365D", "B365A"}
     assert metrics["classification_report"]["home_win"]["support"] == 0.0
+
+
+def test_regression_bundle_runs_on_small_synthetic_table() -> None:
+    features = pd.DataFrame(
+        {
+            "B365H": np.linspace(1.2, 3.0, 12),
+            "B365D": np.linspace(2.5, 4.0, 12),
+            "B365A": np.linspace(1.4, 4.5, 12),
+            "home_team_goal": [0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+        }
+    )
+
+    metrics, model, importance = train_regression_bundle(
+        features,
+        split={"test_size": 0.25, "random_state": 7},
+        regression={
+            "feature_columns": ["B365H", "B365D", "B365A"],
+            "target": "home_team_goal",
+        },
+    )
+
+    assert metrics["task"] == "regression"
+    assert metrics["best_model"]
+    assert model is not None
+    assert set(importance["feature"]) == {"B365H", "B365D", "B365A"}
+    assert len(metrics["leaderboard"]) >= 1
+    assert "best_on_test" in metrics
 
 
 def test_has_expected_sqlite_schema_detects_valid_and_invalid_databases(

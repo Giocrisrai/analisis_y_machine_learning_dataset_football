@@ -8,6 +8,8 @@ Estructura paralela a ``ml_classification/nodes.py`` (misma tabla de features):
    requisito de escala (coherente con la guía de algoritmos).
 4. **Mejor modelo** — Mayor **R²** en test (misma regla de ranking que el leaderboard
    en el JSON); en clase se contraste con el coste de errores grandes (MAE/RMSE).
+   Para **validación cruzada**, ``KFold`` y tuning ver ``notebooks/07_…`` y la guía
+   ``docs/guias/modelos_y_flujo_integrado.md`` (sección 4.1).
 5. **Permutación** — Importancias con el estimador final sobre ``(X_test, y_test)``.
 
 Hiperparámetros numéricos: este archivo. Fracción test y nombres de columnas: YAML.

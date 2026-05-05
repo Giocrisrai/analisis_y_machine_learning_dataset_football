@@ -34,7 +34,7 @@ En la primera celda de cada notebook:
 | 04 | `04_regresion_goles.ipynb` | 4–5 | Ridge, bosques, boosting; MAE, RMSE, R²; residuos | ~30–45 min |
 | 05 | `05_explicabilidad_evaluacion.ipynb` | 5 | Permutación, coeficientes logísticos, SHAP opcional | ~30 min |
 | 06 | `06_pipeline_Kedro.ipynb` | 6 | Parámetros YAML, `session.run()`, leer salidas | ~20–30 min |
-| 07 | `07_validacion_cruzada_hiperparametros.ipynb` | 4–5 | KFold/StratifiedKFold, `cross_validate`, `GridSearchCV`, `RandomizedSearchCV` | ~45–60 min |
+| 07 | `07_validacion_cruzada_hiperparametros.ipynb` | 4–5 | KFold/StratifiedKFold, `cross_validate`, `GridSearchCV`, `RandomizedSearchCV` (complementa el un solo split de `kedro run`; ver guía **4.1** en `docs/guias/modelos_y_flujo_integrado.md`) | ~45–60 min |
 | 08 | `08_no_supervisado_clustering.ipynb` | 2–4 | PCA, K-Means, silhouette e interpretación de clusters | ~30–45 min |
 
 \*Depende del hardware y de si usáis la base completa o la sintética.

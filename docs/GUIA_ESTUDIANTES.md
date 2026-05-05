@@ -99,19 +99,35 @@ python scripts/bootstrap_data.py --source minimal --force
 
 ### 3.4 Comprobar que “todo corre”
 
+**Importante:** ejecuta estos comandos con el **mismo Python** donde instalaste el proyecto (entorno virtual activo o `uv run …`). Si usas el Python del sistema sin `pyarrow`, `kedro run` fallará al guardar Parquet; el script `scripts/check_runtime_deps.py` (lo invoca `make verify`) te lo indica antes con un mensaje claro.
+
 Desde la raíz del proyecto:
 
 ```bash
 make verify
 ```
 
-Esto ejecuta: formato/lint (Ruff), crea datos mínimos si hace falta, **pytest** y **`kedro run`**. Si termina sin errores, tu entorno está bien configurado.
+Esto ejecuta: formato/lint (Ruff), bootstrap mínimo de SQLite si aplica, **comprobación de dependencias** (`pyarrow`, sklearn, Kedro…), **pytest** y **`kedro run`**. Si termina sin errores, tu entorno está bien configurado.
+
+**Ensayo completo antes de una clase (recomendado para el docente):** incluye además la ejecución de los 9 notebooks en memoria (~3 minutos o más según máquina):
+
+```bash
+make verify-all
+```
 
 Si tienes `make`, puedes ver todos los comandos del proyecto con `make help`.
+
+Con **uv** sin activar el venv manualmente:
+
+```bash
+uv run make verify
+uv run make verify-all
+```
 
 Si no tienes `make` instalado (algunos Windows), ejecuta manualmente:
 
 ```bash
+python scripts/check_runtime_deps.py
 python scripts/bootstrap_data.py --source minimal --force
 pytest -q
 python -m kedro run
