@@ -51,6 +51,9 @@ dev = [
 explain = [
     "shap>=0.45",
 ]
+infra = [
+    "dvc>=3,<4",
+]
 
 [tool.setuptools.dynamic]
 version = {attr = "analisis_equipos_de_football.__version__"}

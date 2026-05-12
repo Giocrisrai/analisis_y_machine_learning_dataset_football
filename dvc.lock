@@ -1,0 +1,64 @@
+schema: '2.0'
+stages:
+  kedro_ml:
+    cmd: bash -lc 'python scripts/bootstrap_data.py --source minimal --force && export
+      KEDRO_DISABLE_TELEMETRY=1 && python -m kedro run'
+    deps:
+    - path: conf/base/catalog.yml
+      hash: md5
+      md5: e76fe65806c1747b940e9314e6948d0b
+      size: 2049
+    - path: conf/base/parameters.yml
+      hash: md5
+      md5: 0aa83cf9b07c6ddef532b8fba04ff2a0
+      size: 778
+    - path: conf/logging.yml
+      hash: md5
+      md5: 4a8f5a405728fbb856cf1554fd0954d7
+      size: 1038
+    - path: scripts/bootstrap_data.py
+      hash: md5
+      md5: 63451400f3a9c36d79562a3c32db22dd
+      size: 7480
+    - path: src/analisis_equipos_de_football/pipeline_registry.py
+      hash: md5
+      md5: df360d1e24ad4294e9add77adf6b58e1
+      size: 1326
+    - path: src/analisis_equipos_de_football/pipelines
+      hash: md5
+      md5: 40e5e0618179dd51c7a7e66a00459ce2.dir
+      size: 40971
+      nfiles: 20
+    - path: src/analisis_equipos_de_football/settings.py
+      hash: md5
+      md5: f879cffc0a2d316fc5746b3cd0e5bcd0
+      size: 1771
+    outs:
+    - path: data/05_model_input/features_for_ml.parquet
+      hash: md5
+      md5: bc8d465236e9569089c3950c358c4de9
+      size: 122659
+    - path: data/06_models/classification_best_model.pkl
+      hash: md5
+      md5: 89aab00701ecb12a2a30a8f253892289
+      size: 1265795
+    - path: data/06_models/regression_best_model.pkl
+      hash: md5
+      md5: 2345506239c98d4e81695d5774b7bce9
+      size: 1010
+    - path: data/08_reporting/classification_metrics.json
+      hash: md5
+      md5: 046557ce69aebe6a865510a8e266fa19
+      size: 1820
+    - path: data/08_reporting/classification_permutation_importance.csv
+      hash: md5
+      md5: a4f9e73978f768f5407fad26b1ffe0e9
+      size: 180
+    - path: data/08_reporting/regression_metrics.json
+      hash: md5
+      md5: 41d3aeb91cb5d7e06d2b63d715f1610e
+      size: 771
+    - path: data/08_reporting/regression_permutation_importance.csv
+      hash: md5
+      md5: eef24eedc7d73bed524c359a3c0e61a1
+      size: 189

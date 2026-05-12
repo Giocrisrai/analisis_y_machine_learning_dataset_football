@@ -1,0 +1,5 @@
+# Evita meter en el hashing de DVC rutas grandes o irrelevantes
+.git
+.idea
+**/node_modules
+mlruns/

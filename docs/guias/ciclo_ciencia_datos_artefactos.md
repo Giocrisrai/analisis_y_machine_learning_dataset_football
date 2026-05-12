@@ -61,6 +61,9 @@ En la práctica, **no tienes que seguir todas las ramas**: el guion docente habi
 | Aprendizaje no supervisado | Sí ilustrativo | `08_*` (PCA + K-Means + métricas de cluster) |
 | Reproductibilidad del flujo completo | Sí | `python -m kedro run`, `make verify`, CI en `.github/workflows/ci.yml` |
 | Contenedor / entorno aislado | Opcional pero documentado | `Dockerfile`, `docker-compose.yml` |
+| Versionado de datos y artefactos medianos-grandes | Opcional | DVC (`dvc.yaml`, `docs/DATABRICKS_DVC_AIRFLOW.md`, `make dvc-repro`) |
+| Programación institucional (Airflow DAGs) | Opcional | `integrations/airflow/dags/kedro_football_pipeline.py` |
+| Lakehouse institucional (Databricks) | Opcional plantilla/doc | `integrations/databricks/` + guía combinada anterior |
 
 Lo que este repo **no** pretende resolver al 100 % por sí solo: despliegue en producción (API, scheduling en nube), gobernanza de datos en tiempo real, ni inferencia batch en escala grande. Para docencia suele bastar llegar hasta **métricas, modelos serializados y pipeline versionable**.
 

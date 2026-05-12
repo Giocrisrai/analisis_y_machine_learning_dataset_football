@@ -10,6 +10,13 @@
 - **[guias/crispdm_y_machine_learning.md](guias/crispdm_y_machine_learning.md)** — Metodología CRISP-DM y métricas.
 - **[guias/modelos_y_flujo_integrado.md](guias/modelos_y_flujo_integrado.md)** — Modelos de ML, diagramas del flujo, FAQ.
 
+## Integraciones institucionales (opcional)
+
+Databricks (Lakehouse), **DVC** para artefactos derivados del pipeline y ejemplo de DAG **Apache Airflow** están documentados aquí:
+
+- **[DATABRICKS_DVC_AIRFLOW.md](DATABRICKS_DVC_AIRFLOW.md)** — instalación práctica + decisiones sobre SQLite/Git LFS.
+- Carpeta **[`integrations/`](../integrations/README.md)** — DAG Airflow (`integrations/airflow`), plantillas Databricks y notas rápidas DVC.
+
 ## Entorno técnico y contenedores
 
 - **[DESARROLLO_Y_DOCKER.md](DESARROLLO_Y_DOCKER.md)** — Bootstrap de datos, `make verify`, Docker Compose.

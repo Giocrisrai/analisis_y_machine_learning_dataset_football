@@ -106,6 +106,12 @@ pytest               # solo tests
 
 ---
 
+## Integraciones institucionales (opcional)
+
+Databricks, **DVC** y **Apache Airflow** están documentados como extensión (no necesarias para el laboratorio estándar). Ver **[docs/DATABRICKS_DVC_AIRFLOW.md](docs/DATABRICKS_DVC_AIRFLOW.md)** y **`integrations/`**. Comandos útiles (`make infra-sync`, `make dvc-repro`).
+
+---
+
 ## Docker (opcional)
 
 Requiere Docker en ejecución. Ver [docs/DESARROLLO_Y_DOCKER.md](docs/DESARROLLO_Y_DOCKER.md):

@@ -1,0 +1,22 @@
+# Plantilla starter — cópiala a un directorio nuevo (p. ej. bundle/databricks.yml) y ejecuta:
+#   databricks bundle validate
+# Reemplazar REPLACE_CLUSTER_ID por un cluster tipo "Single node" ya existente si la organización así lo permite.
+bundle:
+  name: analisis_football_lab
+
+targets:
+  dev:
+    workspace: {}
+    resources:
+      jobs:
+        kedro_notebook_quickstart:
+          name: "[analisis-football] ejecutar notebook 06 (plantilla)"
+          max_concurrent_runs: 1
+          tags:
+            source: kedro_analisis
+          timeout_seconds: 7200
+          tasks:
+            - task_key: run_kedro_nb
+              existing_cluster_id: REPLACE_CLUSTER_ID
+              notebook_task:
+                notebook_path: REPLACE_NOTEBOOK_PATH

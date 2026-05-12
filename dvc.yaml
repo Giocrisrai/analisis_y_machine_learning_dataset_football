@@ -1,0 +1,25 @@
+# Pipeline DVC opcional sobre Kedro.
+# SQLite `data/raw/database.sqlite` suele estar en Git LFS en clase → no lo declaramos como `out`.
+# Esta etapa fuerza la base sintética mínima; evita lanzar así si tienes SQLite grande sin backup.
+#
+# Uso: `uv sync --extra dev --extra infra` → `make dvc-repro`.
+stages:
+  kedro_ml:
+    cmd:
+      bash -lc 'python scripts/bootstrap_data.py --source minimal --force && export KEDRO_DISABLE_TELEMETRY=1 && python -m kedro run'
+    deps:
+      - scripts/bootstrap_data.py
+      - conf/base/catalog.yml
+      - conf/base/parameters.yml
+      - conf/logging.yml
+      - src/analisis_equipos_de_football/pipeline_registry.py
+      - src/analisis_equipos_de_football/settings.py
+      - src/analisis_equipos_de_football/pipelines
+    outs:
+      - data/05_model_input/features_for_ml.parquet
+      - data/06_models/classification_best_model.pkl
+      - data/06_models/regression_best_model.pkl
+      - data/08_reporting/classification_metrics.json
+      - data/08_reporting/regression_metrics.json
+      - data/08_reporting/classification_permutation_importance.csv
+      - data/08_reporting/regression_permutation_importance.csv
