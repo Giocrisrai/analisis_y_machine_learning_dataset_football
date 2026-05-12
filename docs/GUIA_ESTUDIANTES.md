@@ -7,8 +7,9 @@ Esta guía es el **punto de entrada** para trabajar en el laboratorio. Sigue los
 ## 1. Qué incluye este proyecto
 
 - **Datos:** partidos de fútbol en SQLite (`Match`, `League`, etc.). En clase usamos sobre todo cuotas **Bet365** y goles para clasificación (resultado) y regresión (goles del local).
-- **Notebooks (Jupyter):** exploración paso a paso alineada con **CRISP-DM**.
-- **Kedro:** mismo flujo de datos y modelos de forma **reproducible** desde la terminal (`kedro run`).
+- **Notebooks (Jupyter):** exploración paso a paso alineada con **CRISP-DM** (clasificación, regresión, explicabilidad, validación cruzada, clustering).
+- **Kedro:** mismo flujo de datos y **modelado supervisado** de forma **reproducible** desde la terminal (`kedro run`); otros temas siguen sobre todo en notebooks.
+- **Integración continua:** al subir código a GitHub, el archivo `.github/workflows/ci.yml` ejecuta linter, tests, pipeline y notebooks con datos mínimos (ver [docs/README.md](README.md)).
 - **Pruebas:** `pytest` y `make verify` comprueban que el pipeline funciona.
 
 ---
@@ -217,7 +218,7 @@ Catálogo de datasets: `conf/base/catalog.yml`.
 ├── data/06_models/      # Modelos entrenados (.pkl)
 ├── data/08_reporting/   # Métricas JSON, CSV de importancias
 ├── docs/guias/          # CRISP-DM, modelos, flujo integrado
-├── notebooks/           # Laboratorios 01–06
+├── notebooks/           # Laboratorios 01–08 (+ Exploracion_de_datos)
 ├── scripts/             # bootstrap_data.py (crear SQLite)
 ├── src/.../pipelines/   # Nodos Kedro (código Python del pipeline)
 └── tests/               # Pruebas automáticas
@@ -243,9 +244,10 @@ Catálogo de datasets: `conf/base/catalog.yml`.
 
 | Documento | Contenido |
 |-------------|-----------|
+| [ciclo_ciencia_datos_artefactos.md](guias/ciclo_ciencia_datos_artefactos.md) | Ciclo DS completo: fases ↔ notebooks ↔ Kedro ↔ archivos |
 | [crispdm_y_machine_learning.md](guias/crispdm_y_machine_learning.md) | Fases CRISP-DM, métricas, enlace con el repo |
 | [modelos_y_flujo_integrado.md](guias/modelos_y_flujo_integrado.md) | Explicación de algoritmos, diagramas, FAQ |
-| [DESARROLLO_Y_DOCKER.md](DESARROLLO_Y_DOCKER.md) | Docker, bootstrap avanzado, CI |
+| [DESARROLLO_Y_DOCKER.md](DESARROLLO_Y_DOCKER.md) | Docker, bootstrap avanzado, CI (`/.github/workflows/`) |
 
 ---
 

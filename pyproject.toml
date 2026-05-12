@@ -71,6 +71,10 @@ source_dir = "src"
 addopts = """
 --cov-report term-missing \
 --cov src/analisis_equipos_de_football -ra"""
+filterwarnings = [
+    # pandas/SQLAlchemy vía Kedro pueden dejar refs a sqlite3 antes del GC final
+    "ignore:unclosed database:ResourceWarning",
+]
 
 [tool.coverage.report]
 fail_under = 0

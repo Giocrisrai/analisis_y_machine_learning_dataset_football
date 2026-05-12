@@ -3,8 +3,8 @@
 ## Antes de abrir cualquier notebook
 
 1. **Raíz del proyecto** en la terminal (donde está `pyproject.toml`).
-2. **Entorno virtual activado** (`.venv`).
-3. **Dependencias instaladas:** `pip install -r requirements.txt` y `pip install -e .`
+2. Dependencias reproducibles recomendadas: **`uv sync --extra dev`** (alternativa `pip install -r requirements.txt` y `pip install -e ".[dev]"` con `.venv` activo).
+3. **Entorno:** activar `.venv` **o** usar siempre comandos **`uv run …`** cuando la guía lo indique.
 4. **Base de datos creada:** `python scripts/bootstrap_data.py`  
    Guía detallada: [docs/GUIA_ESTUDIANTES.md](../docs/GUIA_ESTUDIANTES.md)
 
@@ -46,7 +46,7 @@ En la primera celda de cada notebook:
 ## Después de los notebooks
 
 - Ejecutar el pipeline completo: `python -m kedro run`
-- Verificar el proyecto: `make verify` (desde la raíz, con `pip install -e ".[dev]"`)
+- Verificar el proyecto: `uv run make verify-all` **o** `make verify-all` tras activar `.venv`.
 - Verificar que los notebooks corren: `make verify-notebooks`
 
 Salidas generadas por Kedro:
@@ -68,4 +68,4 @@ Salidas generadas por Kedro:
 
 ## Nota sobre la base sintética
 
-Si usáis `bootstrap_data.py` sin descarga completa, la base **mínima** tiene la tabla `Match` poblada pero otras tablas (`Player`, `Team`, …) pueden estar **vacías**. Los laboratorios 01–06 están pensados para no depender de esas tablas, salvo exploraciones opcionales en el notebook 01.
+Si usáis `bootstrap_data.py` sin descarga completa, la base **mínima** tiene la tabla `Match` poblada pero otras tablas (`Player`, `Team`, …) pueden estar **vacías**. Los laboratorios 01–08 están pensados para no depender de esas tablas, salvo exploraciones opcionales en el notebook 01.

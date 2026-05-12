@@ -43,13 +43,15 @@ Si ya tienes el archivo de Kaggle, cópialo a `data/raw/database.sqlite`. El pro
 
 ## 2. Probar el pipeline en local
 
-Chequeo recomendado (requiere `pip install -e ".[dev]"` y `make`):
+Chequeo recomendado (venv con dependencias instaladas — p. ej. `uv sync --extra dev` — y herramienta `make`; alternativa muy segura **`uv run make verify`**):
 
 ```bash
 make verify
 ```
 
 Equivale a: formatear con Ruff, lint, crear SQLite mínima si falta, `pytest` y `kedro run`.
+
+**Integración continua:** en cada push y PR contra `main`/`master`, [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) ejecuta el mismo chequeo automatizado sobre Python **3.11 y 3.12** más la reproducción «headless» de los notebooks (SQLite mínima). Orientativamente coincide con `make verify-all` usando `uv run`.
 
 Pasos manuales:
 

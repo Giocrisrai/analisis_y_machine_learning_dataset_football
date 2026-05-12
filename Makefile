@@ -1,6 +1,8 @@
 .PHONY: help sync verify verify-all verify-notebooks format lint test kedro-run bootstrap-minimal kedro-viz check-runtime
 
 help:
+	@echo "Tip: usar  uv run make <objetivo>  si no activaste .venv (garantiza pyarrow/sklearn)."
+	@echo ""
 	@echo "Objetivos útiles:"
 	@echo "  make sync            - instalar dependencias con uv"
 	@echo "  make check-runtime   - comprobar pyarrow/sklearn/kedro en el Python activo"
@@ -37,7 +39,7 @@ test:
 	python -m pytest tests/ -q --tb=short
 
 kedro-run:
-	python -m kedro run
+	KEDRO_DISABLE_TELEMETRY=1 python -m kedro run
 
 kedro-viz:
 	kedro viz

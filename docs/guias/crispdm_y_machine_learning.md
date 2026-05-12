@@ -2,11 +2,11 @@
 
 **¿Primera vez con el repo?** Empieza por [../GUIA_ESTUDIANTES.md](../GUIA_ESTUDIANTES.md) (instalación, datos, Jupyter).
 
-Esta guía enlaza la metodología **CRISP-DM** (estándar de la industria para proyectos de minería de datos) con el flujo de trabajo de este repositorio: notebook exploratorio, catálogo Kedro y pipelines reproducibles. Sirve como hilo conductor para clases o talleres.
+Esta guía enlaza la metodología **CRISP-DM** (estándar de la industria para proyectos de minería de datos) con el flujo de trabajo de este repositorio: notebook exploratorio, catálogo Kedro y pipelines reproducibles. Sirve como hilo conductor para clases o talleres. Para un mapa **fase ↔ notebook ↔ artefactos** (incluye no supervisado y CI), ver **[ciclo_ciencia_datos_artefactos.md](ciclo_ciencia_datos_artefactos.md)**.
 
 **Guía complementaria (modelos en detalle + flujo integrado con diagramas):** [modelos_y_flujo_integrado.md](modelos_y_flujo_integrado.md).
 
-**Notebooks por fases (01–06) y opcional todo-en-uno:** ver [../../notebooks/README.md](../../notebooks/README.md).
+**Notebooks por fases (01–08) y opcional todo-en-uno:** ver [../../notebooks/README.md](../../notebooks/README.md).
 
 ---
 

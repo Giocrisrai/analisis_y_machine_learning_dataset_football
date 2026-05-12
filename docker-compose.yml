@@ -12,18 +12,24 @@
 services:
   pipeline:
     build: .
+    environment:
+      KEDRO_DISABLE_TELEMETRY: "1"
     volumes:
       - football_data:/app/data
     command: ["sh", "-c", "python scripts/bootstrap_data.py && kedro run"]
 
   pipeline-minimal:
     build: .
+    environment:
+      KEDRO_DISABLE_TELEMETRY: "1"
     volumes:
       - football_data:/app/data
     command: ["sh", "-c", "python scripts/bootstrap_data.py --source minimal && kedro run"]
 
   test:
     build: .
+    environment:
+      KEDRO_DISABLE_TELEMETRY: "1"
     volumes:
       - football_test_data:/app/data
     command:

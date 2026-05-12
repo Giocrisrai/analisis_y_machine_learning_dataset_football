@@ -1,8 +1,12 @@
 # Análisis y modelos — datos de fútbol (Kedro)
 
+[![CI](https://github.com/Giocrisrai/analisis_y_machine_learning_dataset_football/actions/workflows/ci.yml/badge.svg)](https://github.com/Giocrisrai/analisis_y_machine_learning_dataset_football/actions/workflows/ci.yml)
+
 [![Powered by Kedro](https://img.shields.io/badge/powered_by-kedro-ffc900?logo=kedro)](https://docs.kedro.org)
 
-Proyecto para **exploración de datos**, **machine learning** (clasificación y regresión) y **pipelines reproducibles** con [Kedro 1.3](https://docs.kedro.org), pensado para **docencia** (CRISP-DM, métricas, comparación de modelos).
+Proyecto para **exploración de datos**, **machine learning** (clasificación y regresión), **modelos no supervisados** y **pipelines reproducibles** con [Kedro 1.3](https://docs.kedro.org), pensado para **docencia** (CRISP-DM, métricas, comparación de modelos).
+
+**Mapa del ciclo de vida (EDA → ML → Kedro/Docker → CI):** [docs/guias/ciclo_ciencia_datos_artefactos.md](docs/guias/ciclo_ciencia_datos_artefactos.md)
 
 ---
 
@@ -10,7 +14,7 @@ Proyecto para **exploración de datos**, **machine learning** (clasificación y 
 
 1. Leer **[docs/GUIA_ESTUDIANTES.md](docs/GUIA_ESTUDIANTES.md)** (instalación, datos, Jupyter, pruebas).
 2. Laboratorios en orden: **[notebooks/README.md](notebooks/README.md)**.
-3. Comprobar el entorno: `make verify` (tras `uv sync --extra dev` o `pip install -e ".[dev]"`).
+3. Comprobar el entorno: tras `uv sync --extra dev` (o `pip install -e ".[dev]"` con venv activo), ejecutar **`uv run make verify`** o `make verify` — evita ejecutar contra un Python sin `pyarrow`.
 
 **Índice de toda la documentación:** [docs/README.md](docs/README.md)
 
@@ -20,6 +24,7 @@ Proyecto para **exploración de datos**, **machine learning** (clasificación y 
 
 | Recurso | Descripción |
 |---------|-------------|
+| [docs/guias/ciclo_ciencia_datos_artefactos.md](docs/guias/ciclo_ciencia_datos_artefactos.md) | Ciclo DS end-to-end, tablas fase ↔ notebook ↔ Kedro ↔ artefactos |
 | [docs/guias/crispdm_y_machine_learning.md](docs/guias/crispdm_y_machine_learning.md) | CRISP-DM, métricas, vínculo con el repositorio |
 | [docs/guias/modelos_y_flujo_integrado.md](docs/guias/modelos_y_flujo_integrado.md) | Algoritmos, diagramas notebook ↔ Kedro, FAQ |
 | [notebooks/README.md](notebooks/README.md) | Orden de los laboratorios y tiempos orientativos |
@@ -43,7 +48,7 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install --upgrade pip uv
 uv sync --extra dev                # entorno reproducible con uv.lock
 python scripts/bootstrap_data.py
-make verify                        # opcional: comprobar todo
+uv run make verify-all             # recomendado: incluye notebooks (CI en GitHub hace algo equivalente)
 ```
 
 Opcional — SHAP en notebooks: `uv sync --extra dev --extra explain`
@@ -57,6 +62,8 @@ Con la base ya en `data/raw/database.sqlite`:
 ```bash
 python -m kedro run
 ```
+
+Si aparece el mensaje de telemetría de Kedro o quieres uniformidad con el Makefile, en macOS/Linux puedes usar `export KEDRO_DISABLE_TELEMETRY=1`, o el objetivo `make kedro-run` (equivalente).
 
 Etapas por defecto (`pipeline_registry.py`):
 
@@ -89,10 +96,12 @@ Variables útiles: `catalog`, `context`, `session` (extensión `%load_ext kedro.
 ## Pruebas y calidad
 
 ```bash
-make help         # lista objetivos del Makefile
-make verify       # format + lint + bootstrap mínimo + pytest + kedro run
-make verify-notebooks # ejecuta notebooks en memoria
-pytest            # solo tests
+make help            # lista objetivos del Makefile (incluye el tip de uv run)
+uv run make verify   # recomendado si no activaste el venv
+make verify          # format + lint + bootstrap mínimo + pytest + kedro run
+make verify-all      # como verify + notebooks
+make verify-notebooks
+pytest               # solo tests
 ```
 
 ---
@@ -114,7 +123,7 @@ docker compose --profile viz up kedro-viz
 
 - No eliminar reglas importantes del `.gitignore`.
 - No commitear datos grandes ni credenciales; configuración local en `conf/local/`.
-- Reproducibilidad: dependencias en `requirements.txt` / `pyproject.toml`.
+- Reproducibilidad: dependencias en `requirements.txt` / `pyproject.toml`; el workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) valida `uv.lock` contra Python 3.11 y 3.12.
 
 ---
 
