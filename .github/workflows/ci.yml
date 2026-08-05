@@ -71,5 +71,8 @@ jobs:
           uv sync --locked --extra dev --python 3.11
           uv run python scripts/bootstrap_data.py --source minimal --force
 
+      - name: Registrar kernel de Jupyter (evita NoSuchKernel en CI)
+        run: uv run python -m ipykernel install --user --name kedro_analisis_equipos_de_football --display-name "kedro_analisis_equipos_de_football"
+
       - name: Ejecutar notebooks (nbclient)
         run: uv run python scripts/verify_notebooks.py
